@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đặt Phòng Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--bg2:#171b26;--bg3:#1e2436;--border:#2a3150;
+  --green:#22c55e;--green-glow:rgba(34,197,94,.15);
+  --red:#ef4444;--red-dim:rgba(239,68,68,.18);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,.18);
+  --blue:#3b82f6;--blue-dim:rgba(59,130,246,.18);
+  --gray-dim:#374151;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --slot-w:38px;--slot-h:40px;--label-w:116px;
+  --radius:12px;--shadow:0 8px 32px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lexend',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* TOPBAR */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.logo{font-size:.95rem;font-weight:800;letter-spacing:-.5px}
+.logo span{color:var(--green)}
+.role-badge{font-size:.65rem;font-weight:700;padding:2px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.b-admin{background:rgba(239,68,68,.18);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
+.b-staff{background:rgba(59,130,246,.18);color:#60a5fa;border:1px solid rgba(59,130,246,.25)}
+.b-guest{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.18)}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.top-btn{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-size:.73rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .18s;font-family:inherit;display:flex;align-items:center;gap:5px}
+.top-btn:hover{border-color:var(--green);color:var(--green)}
+.top-btn.red:hover{border-color:var(--red);color:var(--red)}
+.hidden{display:none!important}
+
+/* STAFF LOGIN MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.login-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:36px 32px;width:340px;box-shadow:0 24px 80px rgba(0,0,0,.6);animation:fadeUp .35s ease;position:relative}
+.login-card h3{font-size:1rem;font-weight:800;margin-bottom:4px}
+.login-card .sub{font-size:.74rem;color:var(--text3);margin-bottom:22px}
+.fg{margin-bottom:12px}
+.fg label{font-size:.68rem;font-weight:700;color:var(--text2);margin-bottom:5px;display:block;letter-spacing:.3px}
+.fg input,.fg select{width:100%;padding:10px 13px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.84rem;transition:border-color .2s}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--green)}
+.fg select option{background:var(--bg2)}
+.login-btn{width:100%;padding:11px;background:var(--green);color:#000;border:none;border-radius:8px;font-family:inherit;font-size:.9rem;font-weight:800;cursor:pointer;transition:all .18s;margin-top:4px}
+.login-btn:hover{background:#16a34a;transform:translateY(-1px)}
+.login-hint{font-size:.67rem;color:var(--text3);text-align:center;margin-top:11px;line-height:1.7}
+.login-hint b{color:var(--text2)}
+.mclose{position:absolute;top:14px;right:14px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .18s}
+.mclose:hover{border-color:var(--red);color:var(--red)}
+
+/* DATE BAR */
+.datebar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.nav-btn{background:var(--bg3);border:1px solid var(--border);width:30px;height:30px;border-radius:7px;cursor:pointer;color:var(--text2);font-size:1rem;transition:all .18s;display:flex;align-items:center;justify-content:center}
+.nav-btn:hover{border-color:var(--green);color:var(--green)}
+#date-display{font-family:'Roboto Mono',monospace;font-size:.85rem;font-weight:600;color:var(--green);background:var(--green-glow);border:1px solid rgba(34,197,94,.3);border-radius:7px;padding:5px 14px;cursor:pointer;transition:all .18s}
+#date-display:hover{background:rgba(34,197,94,.22)}
+#dpick{position:absolute;opacity:0;pointer-events:none;width:0;height:0}
+.day-chips{display:flex;gap:4px;flex-wrap:wrap}
+.day-chip{padding:4px 10px;border-radius:6px;font-size:.68rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text3);transition:all .15s;white-space:nowrap}
+.day-chip:hover{border-color:var(--green);color:var(--green)}
+.day-chip.active{background:var(--green);color:#000;border-color:var(--green)}
+
+/* LEGEND */
+.legend{padding:8px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--bg)}
+.li{display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--text3)}
+.ld{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.l-empty{background:var(--bg3);border:1px solid var(--border)}
+.l-sel{background:rgba(34,197,94,.35);border:1px solid var(--green)}
+.l-book{background:var(--red-dim);border:1px solid rgba(239,68,68,.4)}
+.l-lock{background:var(--gray-dim);border:1px solid #4b5563}
+.l-event{background:var(--amber-dim);border:1px solid rgba(245,158,11,.4)}
+.l-recur{background:var(--blue-dim);border:1px solid rgba(59,130,246,.4)}
+.l-pend{background:rgba(250,204,21,.25);border:1px solid rgba(250,204,21,.5)}
+
+/* CENTER TABS */
+.ctabs-wrap{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;white-space:nowrap;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.ctabs{display:inline-flex;padding:0 20px;gap:2px}
+.ctab{padding:11px 15px;font-size:.75rem;font-weight:600;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.ctab:hover{color:var(--text2)}
+.ctab.active{color:var(--green);border-bottom-color:var(--green)}
+
+/* GRID */
+.grid-outer{padding:16px 20px 90px;overflow-x:auto}
+.chdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
+.cname{font-size:.95rem;font-weight:700}
+.cstats{display:flex;gap:8px}
+.stat{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+.sf{background:var(--green-glow);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.sb2{background:var(--red-dim);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.gwrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;min-width:max-content;box-shadow:var(--shadow)}
+.thead{display:flex;background:var(--bg3);border-bottom:1px solid var(--border)}
+.thlabel{width:var(--label-w);min-width:var(--label-w);padding:8px 12px;font-size:.62rem;font-weight:700;color:var(--text3);border-right:1px solid var(--border);letter-spacing:.5px;text-transform:uppercase}
+.thslots{display:flex}
+.thcell{width:var(--slot-w);min-width:var(--slot-w);text-align:center;font-size:.56rem;font-weight:600;color:var(--text3);padding:3px 0 5px;border-right:1px solid rgba(255,255,255,.03);font-family:'Roboto Mono',monospace}
+.thcell.hm{border-right:1px solid var(--border);color:var(--text2);font-weight:700}
+.rrow{display:flex;border-bottom:1px solid rgba(255,255,255,.04)}
+.rrow:last-child{border-bottom:none}
+.rlabel{width:var(--label-w);min-width:var(--label-w);padding:0 12px;font-size:.72rem;font-weight:600;color:var(--text2);border-right:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;height:var(--slot-h);background:rgba(0,0,0,.15);transition:background .15s}
+.rprice{font-size:.58rem;color:var(--green);font-family:'Roboto Mono',monospace;font-weight:600}
+.srow{display:flex}
+.slot{width:var(--slot-w);min-width:var(--slot-w);height:var(--slot-h);border-right:1px solid rgba(255,255,255,.025);cursor:pointer;transition:background .08s;flex-shrink:0}
+.slot:nth-child(2n){background:rgba(255,255,255,.01)}
+.slot.hb{border-right:1px solid var(--border)}
+.slot:hover:not(.sb):not(.sl):not(.se):not(.sr):not(.sp){background:rgba(34,197,94,.18)!important}
+.slot.ss{background:rgba(34,197,94,.32)!important;box-shadow:inset 0 0 0 1px var(--green)}
+.slot.sb{background:var(--red-dim)!important;cursor:not-allowed}
+.slot.sl{background:var(--gray-dim)!important;cursor:not-allowed}
+.slot.se{background:var(--amber-dim)!important;cursor:not-allowed}
+.slot.sr{background:var(--blue-dim)!important;cursor:not-allowed}
+.slot.sp{background:rgba(250,204,21,.22)!important;cursor:not-allowed}
+
+/* SEL BAR */
+.selbar{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;z-index:90;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.selbar.show{transform:translateY(0)}
+.selinfo{font-size:.8rem;color:var(--text2)}
+.selinfo b{color:var(--green)}
+.selacts{display:flex;gap:8px}
+.sbtn{padding:8px 16px;border-radius:7px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;border:none;transition:all .18s}
+.sbtn-ok{background:var(--green);color:#000}
+.sbtn-ok:hover{background:#16a34a}
+.sbtn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.sbtn-ghost:hover{border-color:var(--red);color:var(--red)}
+
+/* OVERLAY + PANELS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none;backdrop-filter:blur(3px)}
+.overlay.show{display:block}
+.spanel{position:fixed;right:-460px;top:0;bottom:0;width:420px;background:var(--bg2);border-left:1px solid var(--border);z-index:200;transition:right .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.spanel.open{right:0}
+.phead{background:linear-gradient(135deg,var(--bg3),var(--bg2));padding:20px 22px 16px;border-bottom:1px solid var(--border);position:relative}
+.phead h3{font-size:.95rem;font-weight:800}
+.phead .psub{font-size:.72rem;color:var(--text3);margin-top:3px}
+.pclose{position:absolute;top:16px;right:16px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .18s}
+.pclose:hover{border-color:var(--red);color:var(--red)}
+.pbody{padding:18px 22px;flex:1;overflow-y:auto}
+
+/* BOOKING FORM */
+.sumbox{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:13px 15px;margin-bottom:16px}
+.sumtitle{font-size:.72rem;font-weight:700;color:var(--green);margin-bottom:9px;letter-spacing:.3px}
+.sumrow{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.76rem}
+.sumrow span:first-child{color:var(--text3)}
+.sumrow span:last-child{font-weight:600}
+.sumtot{border-top:1px solid var(--border);margin-top:7px;padding-top:7px}
+.sumtot span:last-child{color:var(--green);font-size:.9rem}
+.fgrp{margin-bottom:12px}
+.fgrp label{font-size:.68rem;font-weight:700;color:var(--text2);margin-bottom:5px;display:block;letter-spacing:.3px}
+.fgrp input,.fgrp select,.fgrp textarea{width:100%;padding:9px 12px;background:var(--bg3);border:1.5px solid var(--border);border-radius:7px;color:var(--text);font-family:inherit;font-size:.8rem;transition:border-color .18s}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{outline:none;border-color:var(--green)}
+.fgrp select option{background:var(--bg2)}
+.fgrp textarea{resize:vertical;min-height:58px}
+.recurbox{background:var(--blue-dim);border:1px solid rgba(59,130,246,.3);border-radius:7px;padding:10px 13px;margin-bottom:12px}
+.recurtoggle{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.78rem;color:#93c5fd}
+.recurtoggle input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px}
+.cfmbtn{width:100%;padding:11px;background:var(--green);color:#000;border:none;border-radius:8px;font-family:inherit;font-size:.9rem;font-weight:800;cursor:pointer;transition:all .18s;margin-top:4px}
+.cfmbtn:hover{background:#16a34a;transform:translateY(-1px);box-shadow:0 5px 18px rgba(34,197,94,.28)}
+.ccbtn{width:100%;padding:9px;background:transparent;color:var(--text3);border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;margin-top:7px}
+.ccbtn:hover{border-color:var(--red);color:var(--red)}
+
+/* PENDING PANEL */
+.ppanel{position:fixed;right:-420px;top:0;bottom:0;width:380px;background:var(--bg2);border-left:1px solid var(--border);z-index:200;transition:right .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.ppanel.open{right:0}
+.pphead{background:linear-gradient(135deg,#1a1400,var(--bg2));padding:20px 22px 16px;border-bottom:1px solid var(--border);position:relative}
+.pphead h3{font-size:.95rem;font-weight:800;color:#fbbf24}
+.ppbody{padding:14px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.pcard{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:14px}
+.pcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.pcard-id{font-family:'Roboto Mono',monospace;font-size:.65rem;color:var(--green)}
+.pcard-info{font-size:.76rem;color:var(--text2);line-height:1.75}
+.pcard-info b{color:var(--text)}
+.pcard-btns{display:flex;gap:6px;margin-top:10px}
+.pbtn{flex:1;padding:7px;border-radius:6px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;border:none;transition:all .18s}
+#pend-badge{background:var(--red);color:#fff;font-size:.6rem;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:4px;display:none}
+
+/* ADMIN PANEL */
+.apanel{position:fixed;left:-480px;top:0;bottom:0;width:440px;background:var(--bg2);border-right:1px solid var(--border);z-index:200;transition:left .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.apanel.open{left:0}
+.ahead{background:linear-gradient(135deg,#1f0a0a,var(--bg2));padding:20px 22px 16px;border-bottom:1px solid var(--border);position:relative}
+.ahead h3{font-size:.95rem;font-weight:800;color:#ef4444}
+.abody{padding:18px 22px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.asec{background:var(--bg3);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.asec-h{padding:10px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);font-size:.72rem;font-weight:700;color:var(--text2)}
+.asec-b{padding:13px 14px;display:flex;flex-direction:column;gap:7px}
+.arow{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.arow select,.arow input{flex:1;min-width:0;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:.75rem}
+.arow select option{background:var(--bg2)}
+.abtn{padding:7px 12px;border-radius:6px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;white-space:nowrap}
+.ar{background:rgba(239,68,68,.18);color:#ef4444;border:1px solid rgba(239,68,68,.25)}.ar:hover{background:rgba(239,68,68,.32)}
+.aa{background:rgba(245,158,11,.18);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}.aa:hover{background:rgba(245,158,11,.32)}
+.ab{background:rgba(59,130,246,.18);color:#60a5fa;border:1px solid rgba(59,130,246,.25)}.ab:hover{background:rgba(59,130,246,.32)}
+.ag{background:var(--green-glow);color:var(--green);border:1px solid rgba(34,197,94,.25)}.ag:hover{background:rgba(34,197,94,.22)}
+
+/* LIST */
+.lpanel{position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column}
+.lpanel.show{display:flex}
+.lhead{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.lhead h3{font-size:.9rem;font-weight:800}
+.lacts{display:flex;gap:7px}
+.lbody{flex:1;overflow-y:auto;padding:20px}
+.lfilters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.lf{padding:6px 12px;border-radius:7px;background:var(--bg2);border:1px solid var(--border);font-family:inherit;font-size:.74rem;color:var(--text2)}
+.lf:focus{outline:none;border-color:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:.75rem}
+th{text-align:left;padding:9px 12px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.5px;text-transform:uppercase}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{padding:2px 7px;border-radius:3px;font-size:.62rem;font-weight:700;text-transform:uppercase}
+.bc{background:var(--green-glow);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.bp{background:rgba(250,204,21,.2);color:#fbbf24;border:1px solid rgba(250,204,21,.25)}
+.bx{background:var(--red-dim);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.alink{font-size:.68rem;color:var(--red);cursor:pointer;font-weight:600;background:none;border:none;font-family:inherit}
+.alink:hover{text-decoration:underline}
+
+/* PRICE MODAL */
+#pmodal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#pmodal.show{display:flex}
+.pmcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 26px;width:360px;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.pmcard h3{font-size:.9rem;font-weight:800;margin-bottom:14px}
+.prow{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:.78rem}
+.prow label{width:72px;color:var(--text2);font-weight:600}
+.prow input{flex:1;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:.78rem}
+.mbtns{display:flex;gap:7px;margin-top:16px}
+.mbtn{flex:1;padding:9px;border-radius:7px;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:all .18s}
+.mbtn-ok{background:var(--green);color:#000}
+.mbtn-no{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+
+/* SCRIPT MODAL */
+#smodal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:401;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#smodal.show{display:flex}
+.smcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;width:500px;max-width:95vw;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.smcard h3{font-size:.9rem;font-weight:800;margin-bottom:12px}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:12px;font-size:.63rem;overflow:auto;max-height:300px;color:#86efac;line-height:1.6;white-space:pre-wrap}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:9px;font-size:.8rem;font-weight:600;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(34,197,94,.4);color:var(--green)}
+.toast.err{border-color:rgba(239,68,68,.4);color:#f87171}
+
+@media(max-width:600px){
+  .spanel,.apanel,.ppanel{width:100%;right:-100%;left:-100%}
+  .topbar,.datebar,.legend{padding-left:12px;padding-right:12px}
+  .grid-outer{padding:10px 6px 90px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">🏟️ Đặt Phòng <span>Pro</span></div>
+    <div class="role-badge b-guest" id="rbadge">🙋 Khách</div>
+  </div>
+  <div class="topbar-right">
+    <button class="top-btn hidden" id="btn-pend" onclick="openPending()">
+      🔔 Chờ duyệt<span id="pend-badge"></span>
+    </button>
+    <button class="top-btn hidden" id="btn-admin" onclick="openAdmin()">⚙️ Quản lý</button>
+    <button class="top-btn hidden" id="btn-list" onclick="openList()">📋 Danh sách</button>
+    <button class="top-btn hidden" id="btn-csv" onclick="exportCSV()">📤 Xuất CSV</button>
+    <button class="top-btn" id="btn-login" onclick="showLoginModal()">🔐 Nhân viên đăng nhập</button>
+    <button class="top-btn red hidden" id="btn-logout" onclick="doLogout()">🚪 Đăng xuất</button>
+  </div>
+</div>
+
+<!-- STAFF LOGIN MODAL -->
+<div class="modal-bg" id="login-modal">
+  <div class="login-card">
+    <button class="mclose" onclick="hideLoginModal()">✕</button>
+    <h3>🔐 Đăng nhập nhân viên</h3>
+    <p class="sub">Dành cho Admin & Lễ tân — Khách không cần đăng nhập</p>
+    <div class="fg">
+      <label>VAI TRÒ</label>
+      <select id="l-role"><option value="admin">👑 Admin</option><option value="staff">💼 Lễ tân</option></select>
+    </div>
+    <div class="fg">
+      <label>TÀI KHOẢN</label>
+      <input type="text" id="l-user" placeholder="Tên đăng nhập...">
+    </div>
+    <div class="fg">
+      <label>MẬT KHẨU</label>
+      <input type="password" id="l-pass" placeholder="Mật khẩu..." onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Đăng nhập →</button>
+    <div class="login-hint">Demo — Admin: <b>admin / admin123</b> &nbsp;·&nbsp; Lễ tân: <b>staff / staff123</b></div>
+  </div>
+</div>
+
+<!-- DATE BAR -->
+<div class="datebar">
+  <button class="nav-btn" onclick="changeDate(-1)">‹</button>
+  <span id="date-display" onclick="openDP()">01/04/2026</span>
+  <button class="nav-btn" onclick="changeDate(1)">›</button>
+  <input type="date" id="dpick" onchange="onDP(this.value)">
+  <div class="day-chips" id="daychips"></div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="li"><div class="ld l-empty"></div>Trống</div>
+  <div class="li"><div class="ld l-sel"></div>Đang chọn</div>
+  <div class="li"><div class="ld l-book"></div>Đã đặt</div>
+  <div class="li"><div class="ld l-pend"></div>Chờ duyệt</div>
+  <div class="li"><div class="ld l-lock"></div>Khoá</div>
+  <div class="li"><div class="ld l-event"></div>Sự kiện</div>
+  <div class="li"><div class="ld l-recur"></div>Định kỳ</div>
+</div>
+
+<!-- CENTER TABS -->
+<div class="ctabs-wrap"><div class="ctabs" id="ctabs"></div></div>
+
+<!-- GRID -->
+<div class="grid-outer">
+  <div class="chdr" id="chdr"></div>
+  <div class="gwrap">
+    <div class="thead">
+      <div class="thlabel">PHÒNG / GIỜ</div>
+      <div class="thslots" id="thslots"></div>
+    </div>
+    <div id="rrows"></div>
+  </div>
+</div>
+
+<!-- SEL BAR -->
+<div class="selbar" id="selbar">
+  <div class="selinfo">Đã chọn <b id="scount">0</b> slot · <b id="sdur">0</b> tiếng · <b id="sprice" style="color:var(--green)">0đ</b></div>
+  <div class="selacts">
+    <button class="sbtn sbtn-ghost" onclick="clearSel()">Bỏ chọn</button>
+    <button class="sbtn sbtn-ok" onclick="openBookPanel()">Đặt phòng →</button>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+<!-- BOOKING PANEL -->
+<div class="spanel" id="bookpanel">
+  <div class="phead">
+    <h3>📋 Đặt phòng</h3>
+    <p class="psub" id="book-role-note">Điền thông tin — nhân viên sẽ xác nhận</p>
+    <button class="pclose" onclick="closeBookPanel()">✕</button>
+  </div>
+  <div class="pbody">
+    <div class="sumbox">
+      <div class="sumtitle">CHI TIẾT ĐẶT PHÒNG</div>
+      <div class="sumrow"><span>Ngày</span><span id="s-date">—</span></div>
+      <div class="sumrow"><span>Trung tâm</span><span id="s-ctr">—</span></div>
+      <div class="sumrow"><span>Phòng</span><span id="s-rooms">—</span></div>
+      <div class="sumrow"><span>Khung giờ</span><span id="s-time">—</span></div>
+      <div class="sumrow"><span>Thời lượng</span><span id="s-dur2">—</span></div>
+      <div class="sumrow sumtot"><span>💰 Tổng</span><span id="s-total">—</span></div>
+    </div>
+    <div class="fgrp">
+      <label>HỌ TÊN *</label>
+      <input type="text" id="f-name" placeholder="Nguyễn Văn A">
+    </div>
+    <div class="fgrp">
+      <label>SỐ ĐIỆN THOẠI *</label>
+      <input type="tel" id="f-phone" placeholder="0912 345 678">
+    </div>
+    <div class="fgrp">
+      <label>MỤC ĐÍCH</label>
+      <select id="f-purpose">
+        <option>Luyện tập / Thi đấu</option>
+        <option>Giải đấu / Sự kiện</option>
+        <option>Sinh nhật / Tiệc</option>
+        <option>Tập thể / CLB</option>
+        <option>Khác</option>
+      </select>
+    </div>
+    <div class="recurbox hidden" id="recurbox">
+      <label class="recurtoggle">
+        <input type="checkbox" id="f-recur" onchange="toggleRecur()">
+        🔁 Đặt lịch định kỳ hàng tuần
+      </label>
+      <div id="recur-opts" style="display:none;margin-top:9px">
+        <div class="fgrp" style="margin-bottom:0">
+          <label>SỐ TUẦN LẶP</label>
+          <input type="number" id="f-weeks" value="4" min="1" max="52">
+        </div>
+      </div>
+    </div>
+    <div class="fgrp">
+      <label>GHI CHÚ</label>
+      <textarea id="f-note" placeholder="Yêu cầu đặc biệt..."></textarea>
+    </div>
+    <button class="cfmbtn" id="cfmbtn" onclick="confirmBooking()">📨 Gửi yêu cầu đặt phòng</button>
+    <button class="ccbtn" onclick="clearSel();closeBookPanel()">Bỏ chọn</button>
+  </div>
+</div>
+
+<!-- PENDING PANEL -->
+<div class="ppanel" id="ppanel">
+  <div class="pphead" style="position:relative">
+    <h3>🔔 Yêu cầu chờ duyệt</h3>
+    <p style="font-size:.72rem;color:var(--text3);margin-top:3px">Xác nhận hoặc từ chối yêu cầu của khách</p>
+    <button class="pclose" onclick="closePending()">✕</button>
+  </div>
+  <div class="ppbody" id="ppbody"></div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="apanel" id="apanel">
+  <div class="ahead" style="position:relative">
+    <h3>⚙️ Quản trị hệ thống</h3>
+    <p style="font-size:.72rem;color:var(--text3);margin-top:3px">Chỉ Admin</p>
+    <button class="pclose" onclick="closeAdmin()">✕</button>
+  </div>
+  <div class="abody">
+    <div class="asec">
+      <div class="asec-h">🔒 Khoá / Mở khoá khung giờ</div>
+      <div class="asec-b">
+        <div class="arow"><select id="a-ctr"></select><select id="a-room"></select></div>
+        <div class="arow">
+          <input type="time" id="a-from" value="00:00" step="1800">
+          <span style="color:var(--text3);font-size:.7rem">→</span>
+          <input type="time" id="a-to" value="06:00" step="1800">
+        </div>
+        <div class="arow">
+          <button class="abtn ar" onclick="adminLock('locked')">🔒 Khoá</button>
+          <button class="abtn ag" onclick="adminLock('unlock')">🔓 Mở</button>
+          <button class="abtn aa" onclick="adminLock('event')">🎯 Sự kiện</button>
+        </div>
+      </div>
+    </div>
+    <div class="asec">
+      <div class="asec-h">💰 Chỉnh giá phòng</div>
+      <div class="asec-b">
+        <div class="arow"><select id="a-pctr"></select><button class="abtn ab" onclick="openPriceModal()">✏️ Sửa giá</button></div>
+      </div>
+    </div>
+    <div class="asec">
+      <div class="asec-h">👥 Tài khoản nhân viên</div>
+      <div class="asec-b">
+        <div class="arow"><input type="text" id="a-nu" placeholder="Tên đăng nhập"><input type="password" id="a-np" placeholder="Mật khẩu"></div>
+        <div class="arow"><select id="a-nr"><option value="staff">Lễ tân</option><option value="admin">Admin</option></select><button class="abtn ag" onclick="addAcc()">➕ Thêm</button></div>
+        <div id="acclist" style="margin-top:6px;font-size:.7rem;color:var(--text3)"></div>
+      </div>
+    </div>
+    <div class="asec">
+      <div class="asec-h">📊 Google Sheet (Apps Script)</div>
+      <div class="asec-b">
+        <div class="arow"><input type="text" id="a-wh" placeholder="URL Apps Script Webhook..."></div>
+        <div class="arow">
+          <button class="abtn ab" onclick="saveWH()">💾 Lưu</button>
+          <button class="abtn ag" onclick="testWH()">🧪 Test</button>
+        </div>
+        <div style="margin-top:7px;font-size:.68rem;color:var(--text3);line-height:1.6">
+          Tự ghi vào Sheet khi xác nhận đặt phòng.<br>
+          <span style="color:#60a5fa;cursor:pointer" onclick="showScript()">📋 Xem code Apps Script mẫu</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING LIST -->
+<div class="lpanel" id="lpanel">
+  <div class="lhead">
+    <h3>📋 Danh sách đặt phòng</h3>
+    <div class="lacts">
+      <button class="top-btn" onclick="exportCSV()">📤 Xuất CSV</button>
+      <button class="top-btn red" onclick="closeList()">✕ Đóng</button>
+    </div>
+  </div>
+  <div class="lbody">
+    <div class="lfilters">
+      <select class="lf" id="lf-ctr" onchange="renderList()"><option value="">Tất cả TT</option></select>
+      <select class="lf" id="lf-st" onchange="renderList()">
+        <option value="">Tất cả TT</option>
+        <option value="confirmed">Xác nhận</option>
+        <option value="pending">Chờ duyệt</option>
+        <option value="cancelled">Đã huỷ</option>
+      </select>
+      <input type="date" class="lf" id="lf-dt" onchange="renderList()">
+    </div>
+    <table><thead><tr>
+      <th>Mã</th><th>Tên</th><th>SĐT</th><th>TT</th><th>Phòng</th>
+      <th>Ngày</th><th>Giờ</th><th>Tổng</th><th>Loại</th><th>T.Thái</th><th></th>
+    </tr></thead><tbody id="ltbody"></tbody></table>
+  </div>
+</div>
+
+<!-- PRICE MODAL -->
+<div id="pmodal">
+  <div class="pmcard">
+    <h3>💰 Giá phòng — <span id="pm-ctr"></span></h3>
+    <div id="pm-rows"></div>
+    <div class="mbtns">
+      <button class="mbtn mbtn-no" onclick="closePM()">Huỷ</button>
+      <button class="mbtn mbtn-ok" onclick="savePrices()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT MODAL -->
+<div id="smodal">
+  <div class="smcard">
+    <h3>📋 Google Apps Script mẫu</h3>
+    <pre id="scode"></pre>
+    <div class="mbtns" style="margin-top:12px">
+      <button class="mbtn mbtn-no" onclick="document.getElementById('smodal').classList.remove('show')">Đóng</button>
+      <button class="mbtn mbtn-ok" onclick="copyScript()">📋 Copy</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───
+const CENTERS=[
+  {id:1,name:"Cầu Giấy"},{id:2,name:"Đội Cấn"},{id:3,name:"Đông Anh"},
+  {id:4,name:"Hà Đông"},{id:5,name:"Hàng Chuối"},{id:6,name:"Linh Đàm"},
+  {id:7,name:"Đền Lừ"},{id:8,name:"Phương Mai"},{id:9,name:"Thanh Trì"},
+  {id:10,name:"Tây Hồ"},{id:11,name:"Trung Hòa"},{id:12,name:"Mỹ Đình"},
+  {id:13,name:"Trung Kính"}
+];
+const ROOMS=5;
+const SLOTS=[];
+for(let h=0;h<24;h++)for(let m=0;m<60;m+=30)SLOTS.push({h,m,label:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`});
+
+const prices={};
+CENTERS.forEach(c=>{prices[c.id]=[80,90,100,80,90].map(v=>v+(c.id%3)*10);});
+
+const SM={}; // statusMap: "cid_r_datekey_si" => status
+const bookings=[];
+let bSeq=1000;
+const accounts=[{user:'admin',pass:'admin123',role:'admin'},{user:'staff',pass:'staff123',role:'staff'}];
+let webhookURL='';
+
+// ─── STATE ───
+let role='guest'; // starts as guest, no login needed
+let curDate=new Date(2026,3,1);
+let curCid=1;
+let sel={}; // "cid_r_si" => {cid,r,si}
+let dragging=false,dragVal=true;
+
+// ─── FAKE DATA ───
+function dk(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function ss(cid,r,key,si,v){SM[`${cid}_${r}_${key}_${si}`]=v;}
+function sg(cid,r,key,si){return SM[`${cid}_${r}_${key}_${si}`]||null;}
+(function initFake(){
+  const t=new Date(2026,3,1);
+  for(let d=-3;d<=14;d++){
+    const dd=new Date(t);dd.setDate(t.getDate()+d);const k=dk(dd);
+    CENTERS.forEach(c=>{
+      for(let r=0;r<ROOMS;r++){
+        for(let s=0;s<4;s++)ss(c.id,r,k,s,'locked');
+        for(let s=46;s<48;s++)ss(c.id,r,k,s,'locked');
+        const nb=Math.floor(Math.random()*4)+1;
+        for(let i=0;i<nb;i++){
+          const st=Math.floor(Math.random()*34)+4,len=Math.floor(Math.random()*4)+2;
+          for(let s=st;s<Math.min(st+len,46);s++)ss(c.id,r,k,s,'booked');
+        }
+      }
+    });
+  }
+})();
+
+// ─── LOGIN ───
+function showLoginModal(){document.getElementById('login-modal').classList.add('show');}
+function hideLoginModal(){document.getElementById('login-modal').classList.remove('show');}
+function doLogin(){
+  const r=document.getElementById('l-role').value;
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value.trim();
+  const acc=accounts.find(a=>a.user===u&&a.pass===p&&a.role===r);
+  if(!acc){toast('❌ Sai tài khoản hoặc mật khẩu','err');return;}
+  role=acc.role;hideLoginModal();applyRole();initAdminSels();initListSel();
+  toast(`✅ Đăng nhập: ${role==='admin'?'Admin':'Lễ tân'}`,'ok');
+}
+function doLogout(){role='guest';applyRole();closeAll();toast('👋 Đã đăng xuất');}
+function h(id,show){document.getElementById(id).classList.toggle('hidden',!show);}
+function applyRole(){
+  const badge=document.getElementById('rbadge');
+  badge.textContent={admin:'👑 Admin',staff:'💼 Lễ tân',guest:'🙋 Khách'}[role];
+  badge.className='role-badge '+{admin:'b-admin',staff:'b-staff',guest:'b-guest'}[role];
+  const isStaff=role!=='guest',isAdmin=role==='admin';
+  h('btn-pend',isStaff);h('btn-admin',isAdmin);h('btn-list',isStaff);
+  h('btn-csv',isStaff);h('btn-login',!isStaff);h('btn-logout',isStaff);
+  // booking panel adjustments
+  h('recurbox',isStaff);
+  const note=document.getElementById('book-role-note');
+  const btn=document.getElementById('cfmbtn');
+  if(isStaff){
+    note.textContent='Đặt ngay — xác nhận tức thì';
+    btn.textContent='✅ Xác nhận đặt phòng';
+  }else{
+    note.textContent='Điền thông tin — nhân viên sẽ xác nhận sau';
+    btn.textContent='📨 Gửi yêu cầu đặt phòng';
+  }
+  updatePendBadge();
+}
+
+// ─── RENDER ───
+function renderAll(){renderDate();renderChips();renderTabs();renderTH();renderRows();updateSelBar();}
+function renderDate(){
+  const d=curDate;
+  document.getElementById('date-display').textContent=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+function renderChips(){
+  const c=document.getElementById('daychips');c.innerHTML='';
+  const dn=['CN','T2','T3','T4','T5','T6','T7'];
+  for(let i=-2;i<=5;i++){
+    const d=new Date(curDate);d.setDate(curDate.getDate()+i);
+    const ch=document.createElement('div');
+    ch.className='day-chip'+(i===0?' active':'');
+    ch.innerHTML=`${dn[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}`;
+    const dc=new Date(d);
+    ch.onclick=()=>{curDate=dc;sel={};renderAll();};
+    c.appendChild(ch);
+  }
+}
+function renderTabs(){
+  const c=document.getElementById('ctabs');c.innerHTML='';
+  CENTERS.forEach(ct=>{
+    const t=document.createElement('div');
+    t.className='ctab'+(ct.id===curCid?' active':'');
+    t.textContent=ct.name;
+    t.onclick=()=>{curCid=ct.id;sel={};renderRows();renderTabs();updateSelBar();};
+    c.appendChild(t);
+  });
+  const ctr=CENTERS.find(c=>c.id===curCid),key=dk(curDate);
+  let free=0,busy=0;
+  for(let r=0;r<ROOMS;r++)for(let s=0;s<SLOTS.length;s++){if(!sg(curCid,r,key,s))free++;else busy++;}
+  document.getElementById('chdr').innerHTML=`
+    <div class="cname">🏟️ ${ctr.name}</div>
+    <div class="cstats"><div class="stat sf">✅ ${free} trống</div><div class="stat sb2">🔴 ${busy} bận</div></div>`;
+}
+function renderTH(){
+  const c=document.getElementById('thslots');c.innerHTML='';
+  SLOTS.forEach(s=>{
+    const el=document.createElement('div');
+    el.className='thcell'+(s.m===0?' hm':'');
+    el.textContent=s.m===0?s.label:'';
+    c.appendChild(el);
+  });
+}
+function renderRows(){
+  const c=document.getElementById('rrows');c.innerHTML='';
+  const key=dk(curDate),cid=curCid;
+  for(let r=0;r<ROOMS;r++){
+    const row=document.createElement('div');row.className='rrow';
+    const lbl=document.createElement('div');lbl.className='rlabel';
+    lbl.innerHTML=`<span>Phòng ${r+1}</span><span class="rprice">${prices[cid][r]}k/30'</span>`;
+    row.appendChild(lbl);
+    const srow=document.createElement('div');srow.className='srow';
+    for(let si=0;si<SLOTS.length;si++){
+      const slot=document.createElement('div');
+      slot.className='slot'+(SLOTS[si].m===0?' hb':'');
+      const st=sg(cid,r,key,si),sk=`${cid}_${r}_${si}`;
+      if(st==='booked')slot.classList.add('sb');
+      else if(st==='pending')slot.classList.add('sp');
+      else if(st==='locked')slot.classList.add('sl');
+      else if(st==='event')slot.classList.add('se');
+      else if(st==='recurring')slot.classList.add('sr');
+      else if(sel[sk])slot.classList.add('ss');
+      const stLabels={booked:'Đã đặt',pending:'Chờ duyệt',locked:'Khoá',event:'Sự kiện',recurring:'Định kỳ'};
+      slot.title=st?stLabels[st]:`Phòng ${r+1} | ${SLOTS[si].label}`;
+      if(!st){
+        slot.addEventListener('mousedown',e=>{e.preventDefault();dragging=true;dragVal=!sel[sk];toggleSlot(cid,r,si,slot,sk);});
+        slot.addEventListener('mouseenter',()=>{if(dragging){if(dragVal&&!sel[sk])toggleSlot(cid,r,si,slot,sk);else if(!dragVal&&sel[sk])toggleSlot(cid,r,si,slot,sk);}});
+        slot.addEventListener('touchstart',e=>{e.preventDefault();dragging=true;dragVal=!sel[sk];toggleSlot(cid,r,si,slot,sk);},{passive:false});
+      }
+      srow.appendChild(slot);
+    }
+    row.appendChild(srow);c.appendChild(row);
+  }
+  document.addEventListener('mouseup',()=>{dragging=false;},{once:true});
+}
+
+function toggleSlot(cid,r,si,el,sk){
+  if(sel[sk]){delete sel[sk];el.classList.remove('ss');}
+  else{sel[sk]={cid,r,si};el.classList.add('ss');}
+  updateSelBar();
+}
+function clearSel(){sel={};renderRows();updateSelBar();}
+function updateSelBar(){
+  const keys=Object.keys(sel),bar=document.getElementById('selbar');
+  bar.classList.toggle('show',keys.length>0);
+  if(!keys.length)return;
+  document.getElementById('scount').textContent=keys.length;
+  document.getElementById('sdur').textContent=(keys.length*.5).toFixed(1);
+  let t=0;keys.forEach(k=>{const{cid,r}=sel[k];t+=prices[cid][r];});
+  document.getElementById('sprice').textContent=fm(t*1000)+'đ';
+}
+
+// ─── BOOKING ───
+function openBookPanel(){
+  if(!Object.keys(sel).length){toast('⚠️ Chọn ít nhất 1 khung giờ','err');return;}
+  updateBookSum();
+  document.getElementById('bookpanel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeBookPanel(){
+  document.getElementById('bookpanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+function updateBookSum(){
+  const keys=Object.keys(sel),d=curDate;
+  document.getElementById('s-date').textContent=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+  document.getElementById('s-ctr').textContent=CENTERS.find(c=>c.id===curCid)?.name;
+  document.getElementById('s-rooms').textContent=[...new Set(keys.map(k=>sel[k].r))].map(r=>`Phòng ${r+1}`).join(', ');
+  const allSi=keys.map(k=>sel[k].si).sort((a,b)=>a-b);
+  document.getElementById('s-time').textContent=`${SLOTS[allSi[0]].label} – ${SLOTS[Math.min(allSi[allSi.length-1]+1,47)].label}`;
+  document.getElementById('s-dur2').textContent=`${(keys.length*.5).toFixed(1)} tiếng`;
+  let t=0;keys.forEach(k=>{const{cid,r}=sel[k];t+=prices[cid][r];});
+  document.getElementById('s-total').textContent=fm(t*1000)+'đ';
+}
+function toggleRecur(){document.getElementById('recur-opts').style.display=document.getElementById('f-recur').checked?'block':'none';}
+function confirmBooking(){
+  const name=document.getElementById('f-name').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  if(!name){toast('⚠️ Nhập họ tên','err');return;}
+  if(!phone){toast('⚠️ Nhập số điện thoại','err');return;}
+  const keys=Object.keys(sel),key=dk(curDate);
+  const isStaff=role!=='guest';
+  const isRecur=isStaff&&document.getElementById('f-recur').checked;
+  const weeks=isRecur?parseInt(document.getElementById('f-weeks').value)||1:1;
+  const bId='BK'+String(++bSeq);
+  const allSi=keys.map(k=>sel[k].si).sort((a,b)=>a-b);
+  let total=0;keys.forEach(k=>{const{cid,r}=sel[k];total+=prices[cid][r];});
+  const rooms=[...new Set(keys.map(k=>sel[k].r))].map(r=>`Phòng ${r+1}`).join(', ');
+  const ctr=CENTERS.find(c=>c.id===curCid);
+  // Guest → pending, Staff/Admin → confirmed
+  const status=isStaff?'confirmed':'pending';
+  const slotStatus=isStaff?'booked':'pending';
+
+  for(let w=0;w<weeks;w++){
+    const wd=new Date(curDate);wd.setDate(curDate.getDate()+w*7);const wk=dk(wd);
+    keys.forEach(k=>{const{cid,r,si}=sel[k];ss(cid,r,wk,si,w===0?slotStatus:'recurring');});
+    if(w>0)bookings.push({id:bId+`-W${w+1}`,name,phone,center:ctr.name,centerId:curCid,rooms,date:wk,
+      time:`${SLOTS[allSi[0]].label}–${SLOTS[Math.min(allSi[allSi.length-1]+1,47)].label}`,
+      slots:keys.length,total:total*1000,purpose:document.getElementById('f-purpose').value,
+      note:document.getElementById('f-note').value,status:'confirmed',recurring:true});
+  }
+  const booking={id:bId,name,phone,center:ctr.name,centerId:curCid,rooms,date:key,
+    time:`${SLOTS[allSi[0]].label}–${SLOTS[Math.min(allSi[allSi.length-1]+1,47)].label}`,
+    slots:keys.length,total:total*1000,purpose:document.getElementById('f-purpose').value,
+    note:document.getElementById('f-note').value,status,recurring:isRecur,
+    selData:keys.map(k=>({...sel[k],date:key}))
+  };
+  bookings.unshift(booking);
+  if(webhookURL)pushSheet({...booking,action:status==='confirmed'?'confirm_booking':'new_booking',createdBy:isStaff?role:'guest'});
+
+  sel={};closeBookPanel();renderRows();updateSelBar();updatePendBadge();
+  ['f-name','f-phone','f-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-recur').checked=false;
+  document.getElementById('recur-opts').style.display='none';
+
+  if(status==='pending')toast(`📨 Đã gửi yêu cầu! Mã: ${bId} — Nhân viên sẽ liên hệ xác nhận`,'ok');
+  else toast(`🎉 Đặt phòng xác nhận! Mã: ${bId}`,'ok');
+}
+
+// ─── PENDING ───
+function updatePendBadge(){
+  const n=bookings.filter(b=>b.status==='pending').length;
+  const badge=document.getElementById('pend-badge');
+  badge.textContent=n;badge.style.display=n>0?'inline':'none';
+}
+function openPending(){renderPending();document.getElementById('ppanel').classList.add('open');document.getElementById('overlay').classList.add('show');}
+function closePending(){document.getElementById('ppanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+function renderPending(){
+  const pend=bookings.filter(b=>b.status==='pending');
+  const body=document.getElementById('ppbody');
+  if(!pend.length){body.innerHTML='<div style="text-align:center;padding:32px;color:var(--text3);font-size:.8rem">✅ Không có yêu cầu nào đang chờ</div>';return;}
+  body.innerHTML=pend.map(b=>`
+    <div class="pcard">
+      <div class="pcard-top">
+        <div><div class="pcard-id">${b.id}</div><div style="font-size:.82rem;font-weight:700;margin-top:3px">${b.name}</div></div>
+        <div style="text-align:right;font-size:.68rem;color:var(--text3)">${b.date}</div>
+      </div>
+      <div class="pcard-info">
+        📞 <b>${b.phone}</b><br>🏟️ <b>${b.center}</b> · ${b.rooms}<br>
+        🕐 <b>${b.time}</b> · ${(b.slots*.5).toFixed(1)} tiếng<br>
+        💰 <b style="color:var(--green)">${fm(b.total)}đ</b><br>
+        🎯 ${b.purpose}${b.note?`<br>📝 ${b.note}`:''}
+      </div>
+      <div class="pcard-btns">
+        <button class="pbtn" style="background:var(--green-glow);color:var(--green);border:1px solid rgba(34,197,94,.3)" onclick="approve('${b.id}')">✅ Xác nhận</button>
+        <button class="pbtn" style="background:var(--red-dim);color:#f87171;border:1px solid rgba(239,68,68,.3)" onclick="reject('${b.id}')">❌ Từ chối</button>
+      </div>
+    </div>`).join('');
+}
+function approve(id){
+  const b=bookings.find(x=>x.id===id);if(!b)return;
+  b.status='confirmed';
+  // update slot from pending → booked
+  if(b.selData)b.selData.forEach(({cid,r,si,date})=>ss(cid,r,date,si,'booked'));
+  if(webhookURL)pushSheet({...b,action:"approve_pending",createdBy:role});
+  updatePendBadge();renderPending();renderRows();toast(`✅ Đã xác nhận ${id}`,'ok');
+}
+function reject(id){
+  const b=bookings.find(x=>x.id===id);if(!b)return;
+  b.status='cancelled';
+  if(b.selData)b.selData.forEach(({cid,r,si,date})=>{delete SM[`${cid}_${r}_${date}_${si}`];});
+  if(webhookURL)pushSheet({...b,action:"cancel_booking",createdBy:role});
+}
+
+// ─── ADMIN ───
+function openAdmin(){renderAccList();const s=localStorage.getItem('wh');if(s){webhookURL=s;document.getElementById('a-wh').value=s;}document.getElementById('apanel').classList.add('open');document.getElementById('overlay').classList.add('show');}
+function closeAdmin(){document.getElementById('apanel').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+function initAdminSels(){
+  ['a-ctr','a-pctr'].forEach(id=>{
+    const s=document.getElementById(id);s.innerHTML='';
+    CENTERS.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;s.appendChild(o);});
+  });
+  updateARooms();document.getElementById('a-ctr').onchange=updateARooms;
+}
+function updateARooms(){
+  const s=document.getElementById('a-room');s.innerHTML='';
+  const all=document.createElement('option');all.value='all';all.textContent='Tất cả phòng';s.appendChild(all);
+  for(let r=0;r<ROOMS;r++){const o=document.createElement('option');o.value=r;o.textContent=`Phòng ${r+1}`;s.appendChild(o);}
+}
+function adminLock(status){
+  const cid=parseInt(document.getElementById('a-ctr').value);
+  const rv=document.getElementById('a-room').value;
+  const [fh,fm2]=document.getElementById('a-from').value.split(':').map(Number);
+  const [th,tm]=document.getElementById('a-to').value.split(':').map(Number);
+  const key=dk(curDate);
+  const rooms=rv==='all'?[...Array(ROOMS).keys()]:[parseInt(rv)];
+  rooms.forEach(r=>{
+    for(let si=0;si<SLOTS.length;si++){
+      const t=SLOTS[si].h*60+SLOTS[si].m;
+      if(t>=fh*60+fm2&&t<th*60+tm){
+        if(status==='unlock')delete SM[`${cid}_${r}_${key}_${si}`];
+        else ss(cid,r,key,si,status);
+      }
+    }
+  });
+  renderRows();toast({locked:'🔒 Đã khoá',unlock:'🔓 Đã mở',event:'🎯 Sự kiện'}[status],'ok');
+}
+function addAcc(){
+  const u=document.getElementById('a-nu').value.trim(),p=document.getElementById('a-np').value.trim(),r=document.getElementById('a-nr').value;
+  if(!u||!p){toast('⚠️ Nhập đầy đủ','err');return;}
+  if(accounts.find(a=>a.user===u)){toast('⚠️ Tài khoản đã tồn tại','err');return;}
+  accounts.push({user:u,pass:p,role:r});renderAccList();
+  document.getElementById('a-nu').value='';document.getElementById('a-np').value='';
+  toast('✅ Đã thêm tài khoản','ok');
+}
+function renderAccList(){
+  document.getElementById('acclist').innerHTML=accounts.map(a=>`
+    <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+      <span style="color:var(--text2)">${a.user}</span>
+      <span style="color:var(--text3)">${{admin:'👑 Admin',staff:'💼 Lễ tân'}[a.role]}</span>
+    </div>`).join('');
+}
+function saveWH(){
+  webhookURL=document.getElementById('a-wh').value.trim();
+  localStorage.setItem('wh',webhookURL);
+  toast('✅ Đã lưu URL','ok');
+}
+function testWH(){
+  if(!webhookURL){toast('⚠️ Nhập URL trước','err');return;}
+  toast('🔄 Đang test kết nối...');
+  fetch(webhookURL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test:true})})
+    .then(r=>r.json())
+    .then(d=>toast(d.ok?`✅ ${d.message||'Kết nối OK!'}`:'❌ Server lỗi','ok'))
+    .catch(()=>toast('❌ Không kết nối được — kiểm tra lại URL','err'));
+}
+async function pushSheet(payload){
+  if(!webhookURL)return;
+  try{
+    await fetch(webhookURL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+  }catch(e){console.warn('Sheet sync failed:',e);}
+}
+
+// ─── PRICE MODAL ───
+function openPriceModal(){
+  const cid=parseInt(document.getElementById('a-pctr').value);
+  document.getElementById('pm-ctr').textContent=CENTERS.find(c=>c.id===cid)?.name;
+  const div=document.getElementById('pm-rows');div.innerHTML='';
+  for(let r=0;r<ROOMS;r++)div.innerHTML+=`<div class="prow"><label>Phòng ${r+1}</label><input type="number" id="pr-${r}" value="${prices[cid][r]}" min="10"><span style="font-size:.7rem;color:var(--text3)">k/slot</span></div>`;
+  document.querySelector('.pmcard').dataset.cid=cid;
+  document.getElementById('pmodal').classList.add('show');
+}
+function closePM(){document.getElementById('pmodal').classList.remove('show');}
+function savePrices(){
+  const cid=parseInt(document.querySelector('.pmcard').dataset.cid);
+  for(let r=0;r<ROOMS;r++)prices[cid][r]=parseInt(document.getElementById(`pr-${r}`).value)||prices[cid][r];
+  closePM();renderRows();toast('✅ Đã lưu giá','ok');
+}
+
+// ─── LIST ───
+function initListSel(){
+  const s=document.getElementById('lf-ctr');if(s.options.length>1)return;
+  CENTERS.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;s.appendChild(o);});
+}
+function openList(){initListSel();renderList();document.getElementById('lpanel').classList.add('show');}
+function closeList(){document.getElementById('lpanel').classList.remove('show');}
+function renderList(){
+  const cid=document.getElementById('lf-ctr').value,st=document.getElementById('lf-st').value,dt=document.getElementById('lf-dt').value;
+  let data=bookings;
+  if(cid)data=data.filter(b=>b.centerId==cid);
+  if(st)data=data.filter(b=>b.status===st);
+  if(dt)data=data.filter(b=>b.date===dt);
+  const tbody=document.getElementById('ltbody');tbody.innerHTML='';
+  if(!data.length){tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--text3)">Chưa có dữ liệu</td></tr>';return;}
+  data.forEach(b=>{
+    const sc={confirmed:'bc',pending:'bp',cancelled:'bx'}[b.status];
+    const sl={confirmed:'Xác nhận',pending:'Chờ duyệt',cancelled:'Đã huỷ'}[b.status];
+    const row=document.createElement('tr');
+    row.innerHTML=`
+      <td style="font-family:'Roboto Mono',monospace;font-size:.65rem;color:var(--green)">${b.id}</td>
+      <td>${b.name}</td><td>${b.phone}</td><td>${b.center}</td><td>${b.rooms}</td>
+      <td style="font-family:'Roboto Mono',monospace;font-size:.68rem">${b.date}</td>
+      <td>${b.time}</td><td style="color:var(--green);font-weight:700">${fm(b.total)}đ</td>
+      <td>${b.recurring?'🔁':'📅'}</td>
+      <td><span class="badge ${sc}">${sl}</span></td>
+      <td>${b.status!=='cancelled'?`<button class="alink" onclick="cancelB('${b.id}')">Huỷ</button>`:'—'}</td>`;
+    tbody.appendChild(row);
+  });
+}
+function cancelB(id){
+  if(!confirm(`Huỷ đặt phòng ${id}?`))return;
+  const b=bookings.find(x=>x.id===id);
+  if(b){b.status='cancelled';if(b.selData)b.selData.forEach(({cid,r,si,date})=>{delete SM[`${cid}_${r}_${date}_${si}`];});if(webhookURL)pushSheet({...b,action:'cancel_booking',createdBy:role});renderList();renderRows();updatePendBadge();toast('✅ Đã huỷ','ok');}
+}
+
+// ─── CSV ───
+function exportCSV(){
+  const hdr=['Mã','Tên','SĐT','TT','Phòng','Ngày','Giờ','Slot','Tổng(đ)','Mục đích','Loại','T.Thái','Ghi chú'];
+  const rows=bookings.map(b=>[b.id,b.name,b.phone,b.center,b.rooms,b.date,b.time,b.slots,b.total,b.purpose,b.recurring?'ĐK':'1L',b.status,b.note||'']);
+  const csv=[hdr,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`datphong_${dk(new Date())}.csv`;a.click();toast('📥 Đã xuất CSV','ok');
+}
+
+// ─── APPS SCRIPT ───
+function showScript(){
+  document.getElementById('scode').textContent=`// Google Apps Script
+// Extensions > Apps Script > Paste > Deploy as Web App (Anyone)
+
+const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID';
+const SHEET_NAME = 'DatPhong';
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    let sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      sheet = ss.insertSheet(SHEET_NAME);
+      const headers = ['Mã','Tên KH','SĐT','Trung tâm','Phòng',
+        'Ngày','Giờ','Slot','Tổng (đ)','Mục đích',
+        'Loại','Trạng thái','Ghi chú','Thời gian tạo'];
+      sheet.appendRow(headers);
+      sheet.getRange(1,1,1,headers.length)
+        .setFontWeight('bold')
+        .setBackground('#1a4731')
+        .setFontColor('#ffffff');
+    }
+    if (data.test) return ok({msg:'Test OK'});
+    sheet.appendRow([
+      data.id, data.name, data.phone,
+      data.center, data.rooms, data.date, data.time,
+      data.slots, data.total, data.purpose,
+      data.recurring ? 'Định kỳ' : 'Một lần',
+      data.status, data.note || '',
+      new Date().toLocaleString('vi-VN')
+    ]);
+    return ok({});
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ok:false,err:err.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+function ok(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify({ok:true,...obj}))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+  document.getElementById('smodal').classList.add('show');
+}
+function copyScript(){navigator.clipboard.writeText(document.getElementById('scode').textContent).then(()=>toast('📋 Đã copy','ok'));}
+
+// ─── MISC ───
+function closeAll(){
+  ['bookpanel','ppanel','apanel'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  document.getElementById('overlay').classList.remove('show');
+}
+function changeDate(d){curDate.setDate(curDate.getDate()+d);sel={};renderAll();}
+function openDP(){const i=document.getElementById('dpick');i.value=dk(curDate);i.style.pointerEvents='auto';i.click();setTimeout(()=>i.style.pointerEvents='none',500);}
+function onDP(v){if(!v)return;const[y,m,d]=v.split('-').map(Number);curDate=new Date(y,m-1,d);sel={};renderAll();}
+function fm(n){return n.toLocaleString('vi-VN');}
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(type?' '+type:'');
+  t.classList.add('show');clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ─── START ───
+applyRole();
+renderAll();
+</script>
+</body>
+</html>
